@@ -1,7 +1,7 @@
 import os
 import shutil
 from markdown_processor import markdown_to_html_node
-from page_generator import generate_page
+from page_generator import generate_page, generate_pages_recursive
 
 def clean_public():
     if os.path.exists("public"):
@@ -21,11 +21,12 @@ def copy_static():
 def main():
     clean_public()
     copy_static()
-    generate_page(
-        from_path="content/index.md",
-        template_path="static/template.html",
-        dest_path="public/index.html"
-    )
+    generate_pages_recursive("content", "static/template.html", "public")
+    # generate_page(
+    #     from_path="content/index.md",
+    #     template_path="static/template.html",
+    #     dest_path="public/index.html"
+    # )
 
 if __name__ == "__main__":
     main()
