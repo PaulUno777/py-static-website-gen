@@ -20,7 +20,7 @@ def extract_title(markdown: str) -> str:
             return line.strip()[2:].strip()
     raise ValueError("No H1 header found in markdown.")
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, base_path: str = "/"):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     
     with open(from_path, "r", encoding="utf-8") as f:
@@ -29,21 +29,20 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     with open(template_path, "r", encoding="utf-8") as f:
         template = f.read()
 
-    html_node = markdown_to_html_node(markdown)
-    content_html = html_node.to_html()
+    html = markdown_to_html_node(markdown).to_html()
     title = extract_title(markdown)
 
-    final_html = template.replace("{{ Title }}", title).replace("{{ Content }}", content_html)
+    page = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+
+    # Fix href/src paths for GitHub Pages subdirectory deployment
+    page = page.replace('href="/', f'href="{base_path}').replace('src="/', f'src="{base_path}')
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w", encoding="utf-8") as f:
-        f.write(final_html)
+        f.write(page)
 
-# src/page_generator.py
-import os
-from page_generator import generate_page
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path="/"):
     for root, dirs, files in os.walk(dir_path_content):
         for file in files:
             if file.endswith(".md"):
@@ -62,4 +61,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
                 # Generate the page
-                generate_page(from_path, template_path, dest_path)
+                generate_page(from_path, template_path, dest_path, base_path)
