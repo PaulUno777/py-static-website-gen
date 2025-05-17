@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 src/main.py "/py-static-website-gen/"
+python3 src/main.py "/py-static-website-gen/" "docs"

@@ -30,7 +30,7 @@ def copy_static(dest_dir="public"):
 
 def main():
     base_path = sys.argv[1] if len(sys.argv) > 1 else "/"
-    dest_dir =  "docs"
+    dest_dir =  sys.argv[2] if len(sys.argv) > 2 else "public"
 
     clean_public(dest_dir)
     copy_static(dest_dir)
